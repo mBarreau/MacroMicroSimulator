@@ -28,32 +28,36 @@ function Simulator(space::Interval{Float32,Closed,Closed}, time::Interval{Float3
     Simulator(space, time, γ, flux, ρ, Δ_T, Δ_L)
 end
 
-function initial_condition(simulator::Simulator, ρ_0)
-    if ρ_0 isa Function
-        x = LinRange(simulator.space.first, simulator.space.last, size(simulator.ρ)[2])
-        simulator.ρ[1, :] = ρ_0.(x)
+function change_density(simulator::Simulator, ρ; line::String)
+    if ρ isa Function
+        t, x = get_axes(simulator)
+        var = (line == "all") ? x : t
+        density = ρ.(var)
     else
-        simulator.ρ[1, :] = ρ_0
+        density = ρ
     end
+
+    if line == "top"
+        simulator.ρ[:, end] = density
+    elseif line == "bottom"
+        simulator.ρ[:, 1] = density
+    else
+        simulator.ρ[1, :] = density
+    end
+
     clamp!(simulator.ρ, 0, 1)
 end
 
-function boundary_condition(simulator::Simulator, ρ; top_boundary_condition::Bool=True)
-    if ρ isa Function
-        t = LinRange(simulator.time.first, simulator.time.last, size(simulator.ρ)[1])
-        if top_boundary_condition
-            simulator.ρ[:, end] = ρ.(t)
-        else
-            simulator.ρ[:, 1] = ρ.(t)
-        end
-    else
-        if top_boundary_condition
-            simulator.ρ[:, end] = ρ
-        else
-            simulator.ρ[:, 1] = ρ
-        end
-    end
-    clamp!(simulator.ρ, 0, 1)
+function initial_condition(simulator::Simulator, ρ_0)
+    change_density(simulator, ρ_0, line="all")
+end
+
+function top_boundary_condition(simulator::Simulator, ρ)
+    change_density(simulator, ρ, line="top")
+end
+
+function bottom_boundary_condition(simulator::Simulator, ρ)
+    change_density(simulator, ρ, line="bottom")
 end
 
 function g(flux::Flux, u, v)

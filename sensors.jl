@@ -52,7 +52,7 @@ end
 function plot(sensors::Sensors)
     fig = plot(sensors.simulator)
     for (t, x) in zip(sensors.times, sensors.positions)
-        Plots.plot!(t, x, legend=false, lc=:white)
+        Plots.plot!(t, x; legend=false, lc=:white)
     end
     fig
 end
@@ -61,8 +61,8 @@ flux = Flux(ρ -> ρ * (1 - ρ), 0.5, 1.0)
 
 simulator = Simulator(1.0f0, 2.0f0, 1000, flux, γ=0)
 initial_condition(simulator, x -> 0.8 * x)
-boundary_condition(simulator, identity, top_boundary_condition=true)
-boundary_condition(simulator, x -> 0.9, top_boundary_condition=false)
+top_boundary_condition(simulator, identity)
+bottom_boundary_condition(simulator, x -> 0.9)
 
 probe_vehicles = Sensors([0.1f0, 0.5f0, 0.8f0], simulator)
 
