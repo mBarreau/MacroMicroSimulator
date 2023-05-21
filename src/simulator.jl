@@ -95,7 +95,15 @@ function update(flux::Flux, ρ::Vector, Δ_T::Float32, Δ_L::Float32, γ::Union{
 end
 
 function compute(simulator::Simulator)
-    for t in ProgressBar(2:size(simulator.ρ)[1])
+    if simulator.γ == 0
+        @info "MacroMicroSimulator: Finite volume method"
+    else
+        @info "MacroMicroSimulator: Finite difference method"
+    end
+
+    iterator = ProgressBar(2:size(simulator.ρ)[1])
+    set_description(iterator, "MacroSimulator")
+    for t in iterator
         simulator.ρ[t, 2:(end-1)] = update(simulator.flux, simulator.ρ[t-1, :], simulator.Δ_T, simulator.Δ_L, simulator.γ)
     end
     simulator.ρ

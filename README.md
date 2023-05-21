@@ -16,33 +16,37 @@ These conditions are coming from [[1]](http://proceedings.mlr.press/v144/barreau
 ```julia
 using MacroMicroSimulator
 
-flux = Flux(ρ -> ρ * (1 - ρ), 0.5, 1.0)
+flux = MacroMicroSimulator.Flux(ρ -> ρ * (1 - ρ), 0.5, 1.0)
 
-simulator = Simulator(1.0f0, 2.0f0, 1000, flux, γ=0)
+simulator = MacroMicroSimulator.Simulator(1.0f0, 2.0f0, 1000, flux, γ=0)
 initial_condition(simulator, x -> 0.8 * x)
 top_boundary_condition(simulator, identity)
 bottom_boundary_condition(simulator, x -> 0.9)
 
 compute(simulator)
 
-plot(simulator) |> display
+MacroMicroSimulator.plot(simulator) |> display
 ```
+
+For more information, please see the documentation.
 
 ## Micro simulator
 
-Based on the density function, it is possible to generate trajectories of particles since the speed of a particle in a flow is defined as *V = f(&#961;) / &#961;*.
+Based on the density function, it is possible to generate trajectories of particles since their speed in the flow is defined as *V(&#961;) = f(&#961;) / &#961;*.
 
 ```julia
-probe_vehicles = Sensors([0.1f0, 0.5f0, 0.8f0], simulator)
+probe_vehicles = MacroMicroSimulator.Sensors([0.1f0, 0.5f0, 0.8f0], simulator)
 
 compute(probe_vehicles)
 
-plot(probe_vehicles) |> display
+MacroMicroSimulator.plot(probe_vehicles) |> display
 ```
 
 The output of this example is given below.
 
 ![simulation image](figs/simulation.png)
+
+For more information, please see the documentation.
 
 # Aknowledgement
 

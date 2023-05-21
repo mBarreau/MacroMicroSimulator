@@ -1,7 +1,5 @@
 using Plots, ProgressBars
 
-include("simulator.jl")
-
 struct Sensors
     positions::Vector{Vector{Float32}}
     times::Vector{Vector{Float32}}
@@ -34,7 +32,9 @@ function compute(sensors::Sensors)
     flux = sensors.simulator.flux
     time, _ = get_axes(sensors.simulator)
     sensors_data = zip(sensors.times, sensors.positions, sensors.densities)
-    for (sensor_time, sensor_position, sensor_density) in ProgressBar(sensors_data)
+    iterator = ProgressBar(sensors_data)
+    set_description(iterator, "MicroSimulator")
+    for (sensor_time, sensor_position, sensor_density) in iterator
         for t in time[1:(end-1)]
             x = sensor_position[end]
             if x > sensors.simulator.space.last
