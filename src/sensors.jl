@@ -13,8 +13,8 @@ function Sensors(initial_positions::Vector{Float32}, simulator::Simulator)
     densities = Vector{Float32}[]
     for initial_position in initial_positions
         push!(positions, [initial_position])
-        push!(times, [simulator.time.first])
-        ρ = get_density(simulator, simulator.time.first, initial_position)
+        push!(times, [simulator.equation.time.first])
+        ρ = get_density(simulator, simulator.equation.time.first, initial_position)
         push!(densities, [ρ])
         if ρ == undef
             @warn("Sensors are created before the initial condition of the simulator.")
@@ -29,7 +29,7 @@ end
 
 function compute(sensors::Sensors)
     Δ_T = sensors.simulator.Δ_T
-    flux = sensors.simulator.flux
+    flux = sensors.simulator.equation.flux
     time, _ = get_axes(sensors.simulator)
     sensors_data = zip(sensors.times, sensors.positions, sensors.densities)
     iterator = ProgressBar(sensors_data)
@@ -37,7 +37,7 @@ function compute(sensors::Sensors)
     for (sensor_time, sensor_position, sensor_density) in iterator
         for t in time[1:(end-1)]
             x = sensor_position[end]
-            if x > sensors.simulator.space.last
+            if x > sensors.simulator.equation.space.last
                 break
             end
             ρ = get_density(sensors.simulator, t, x)
