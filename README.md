@@ -6,9 +6,9 @@ This package provides a numerical solution to the viscous / inviscid quasilinear
 
 $\displaystyle \frac{\partial \rho}{\partial t}(t, x) + \frac{\partial f(\rho)}{\partial x}(t, x) = \gamma \frac{\partial^2 \rho}{\partial x^2} + G(t, x, \rho(t, x))$
 
-for (t, x) $\in$ [0, T] $\times$ [0, L] and the dissipation coefficient $\gamma$ is positive or null. The distribution $G$ is defined as $G(t, x, \rho(t, x)) = \sum_i g_i(t, \rho(t, x)) \delta_{x_i}(x)$ where {$g_i$} are inflow / outflow at $x_i$. $\delta_u$ is the dirac at $u$.
+for $(t, x) \in [0, T] \times [0, L]$ and the dissipation coefficient $\gamma$ is positive or null. The distribution $G$ is defined as $G(t, x, \rho(t, x)) = \sum_i g_i(t, \rho(t, x)) \delta_{x_i}(x)$ where \{$g_i$\} are inflow / outflow at $x_i$. The Dirac at $u$ is represented by $\delta_u$.
 
-The unknown is the density function $\rho$: [0, T] $\times$ [0, L] $\to$ [0, 1]. Initial condition and boundary conditions at $x = 0$ and $x = L$ must be provided. The flux function $f$ is defined such that
+The unknown is the density function $\rho: [0, T] \times [0, L] \to [0, 1]$. Initial condition and boundary conditions at $x = 0$ and $x = L$ must be provided. The flux function $f$ is defined such that
 * $f$ is concave
 * $f(\rho) = V_f\rho + o(\rho)$.
 
