@@ -17,14 +17,17 @@ These conditions are coming from [[1]](http://proceedings.mlr.press/v144/barreau
 ```julia
 using MacroMicroSimulator
 
+# Definition of the equation
 flux = MacroMicroSimulator.Flux(ρ -> ρ * (1 - ρ), ρ_c=0.5f0, V_f=1.0f0)
-equation = MacroMicroSimulator.Equation(L=1.0f0, T=2.0f0, flux=flux, γ=0)
+g1 = (0.5f0, (t, ρ) -> (t >= 1.0f0) ? 0.05f0 * (1 + cos((t - 1) * 6)) : 0.0f0)
+equation = MacroMicroSimulator.Equation(L=1.0f0, T=2.0f0, flux=flux, gs=[g1])
 
-simulator = MacroMicroSimulator.Simulator(equation, 1000)
+# Definition of the macro-simulator
+simulator = MacroMicroSimulator.Simulator(equation, N_L=500)
 initial_condition(simulator, x -> 0.8 * x)
 top_boundary_condition(simulator, identity)
 bottom_boundary_condition(simulator, x -> 0.9)
-compute(simulator)
+compute(simulator) # We compute the solution
 
 MacroMicroSimulator.plot(simulator) |> display
 ```
@@ -36,9 +39,15 @@ For more information, please see the documentation.
 Based on the density function, it is possible to generate trajectories of particles. Their speed in the flow is defined as $V(\rho) = f(\rho) / \rho$ where $\rho$ is the density at the particle position.
 
 ```julia
-probe_vehicles = MacroMicroSimulator.Sensors([0.1f0, 0.5f0, 0.8f0], simulator)
-
-compute(probe_vehicles)
+# Definition of the micro-simulator
+probe_vehicles_initial_condition = [
+    (t=0.0f0, x=0.15f0),
+    (t=0.0f0, x=0.8f0),
+    (t=0.45f0, x=0.0f0),
+    (t=1.5f0, x=0.5f0)
+]
+probe_vehicles = MacroMicroSimulator.Sensors(probe_vehicles_initial_condition, simulator)
+compute(probe_vehicles) # We compute positions of the sensors
 
 MacroMicroSimulator.plot(probe_vehicles) |> display
 ```

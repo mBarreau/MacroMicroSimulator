@@ -7,14 +7,17 @@ struct Sensors
     simulator::Simulator
 end
 
-function Sensors(initial_positions::Vector{Float32}, simulator::Simulator)
+const InitialPosition = NamedTuple{(:t, :x),Tuple{Float32,Float32}}
+
+function Sensors(initial_positions::Vector{InitialPosition}, simulator::Simulator)
     positions = Vector{Float32}[]
     times = Vector{Float32}[]
     densities = Vector{Float32}[]
+    (t_min, x_min) = (simulator.equation.time.first, simulator.equation.space.first)
     for initial_position in initial_positions
-        push!(positions, [initial_position])
-        push!(times, [simulator.equation.time.first])
-        ρ = get_density(simulator, simulator.equation.time.first, initial_position)
+        push!(positions, [max(initial_position.x, x_min)])
+        push!(times, [max(initial_position.t, t_min)])
+        ρ = get_density(simulator, initial_position.t, initial_position.x)
         push!(densities, [ρ])
         if ρ == undef
             @warn("Sensors are created before the initial condition of the simulator.")
@@ -30,20 +33,21 @@ end
 function compute(sensors::Sensors)
     Δ_T = sensors.simulator.Δ_T
     flux = sensors.simulator.equation.flux
-    time, _ = get_axes(sensors.simulator)
     sensors_data = zip(sensors.times, sensors.positions, sensors.densities)
     iterator = ProgressBar(sensors_data)
     set_description(iterator, "MicroSimulator")
     for (sensor_time, sensor_position, sensor_density) in iterator
-        for t in time[1:(end-1)]
-            x = sensor_position[end]
-            if x > sensors.simulator.equation.space.last
-                break
-            end
+        t = sensor_time[end]
+        x = sensor_position[end]
+        while t + Δ_T < sensors.simulator.equation.time.last
             ρ = get_density(sensors.simulator, t, x)
             v = get_speed(flux, ρ)
-            push!(sensor_time, t + Δ_T)
-            push!(sensor_position, x + Δ_T * v)
+            x = x + Δ_T * v
+            x >= sensors.simulator.equation.space.last && break
+            push!(sensor_position, x)
+            t = t + Δ_T
+            push!(sensor_time, t)
+            ρ = get_density(sensors.simulator, t, x)
             push!(sensor_density, ρ)
         end
     end

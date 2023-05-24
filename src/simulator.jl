@@ -31,7 +31,7 @@ struct Simulator
     Δ_L::Float32
 end
 
-function Simulator(equation::Equation, N_L::Int; α::Float32=0.8f0)
+function Simulator(equation::Equation; N_L::Int, α::Float32=0.8f0)
     Δ_L = (equation.space.last - equation.space.first) / N_L
     Δ_T = α * min(Δ_L / (2 * equation.flux.V_f), Δ_L^2 / (2 * equation.γ))
     N_T = ceil(Int32, (equation.time.last - equation.time.first) / Δ_T)
