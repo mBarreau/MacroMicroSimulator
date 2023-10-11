@@ -1,6 +1,6 @@
 name = "MacroMicroSimulator"
 uuid = "d29770c4-682b-4095-82ee-db7924b81a10"
-authors = ["Matthieu Barreau <matth.barreau@gmail.com>"]
+authors = ["Matthieu Barreau <barreau@kth.se>"]
 version = "0.1.0"
 
 [deps]
