@@ -26,7 +26,7 @@ equation = MacroMicroSimulator.Equation(L=1.0f0, T=2.0f0, flux=flux, gs=[g1])
 simulator = MacroMicroSimulator.Simulator(equation, N_L=500)
 initial_condition(simulator, x -> 0.8 * x)
 top_boundary_condition(simulator, identity)
-bottom_boundary_condition(simulator, x -> 0.9)
+bottom_boundary_condition(simulator, t -> 0.9)
 compute(simulator) # We compute the solution
 
 MacroMicroSimulator.plot(simulator) |> display
